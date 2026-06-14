@@ -1,63 +1,105 @@
-import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { RecentClassCard } from "@/components/dashboard/RecentClassCard";
 import { EngagementGauge } from "@/components/dashboard/EngagementGauge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Users, GraduationCap, TrendingUp, Clock, ArrowRight, Radio, AlertCircle } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { useDashboardSummary, useRecentClasses } from "@/hooks/useApi";
+import {
+  Users,
+  GraduationCap,
+  TrendingUp,
+  Clock,
+  ArrowRight,
+  Radio,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Area,
+  AreaChart,
+} from "recharts";
 
 const weeklyEngagement = [
-  { day: "Mon", engagement: 72 }, { day: "Tue", engagement: 68 },
-  { day: "Wed", engagement: 75 }, { day: "Thu", engagement: 82 },
-  { day: "Fri", engagement: 78 }, { day: "Sat", engagement: 0 },
+  { day: "Mon", engagement: 72 },
+  { day: "Tue", engagement: 68 },
+  { day: "Wed", engagement: 75 },
+  { day: "Thu", engagement: 82 },
+  { day: "Fri", engagement: 78 },
+  { day: "Sat", engagement: 0 },
   { day: "Sun", engagement: 0 },
 ];
 
-function StatCardSkeleton() {
-  return (
-    <Card variant="stat">
-      <div className="flex items-start justify-between">
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-8 w-16" />
-          <Skeleton className="h-3 w-20" />
-        </div>
-        <Skeleton className="h-12 w-12 rounded-xl" />
-      </div>
-    </Card>
-  );
-}
+const recentClasses = [
+  {
+    subject: "Physics",
+    topic: "Newton's Laws of Motion",
+    date: "Today",
+    duration: "45 min",
+    students: 32,
+    engagement: 78,
+  },
+  {
+    subject: "Mathematics",
+    topic: "Quadratic Equations",
+    date: "Yesterday",
+    duration: "50 min",
+    students: 28,
+    engagement: 65,
+  },
+  {
+    subject: "Chemistry",
+    topic: "Chemical Bonding",
+    date: "Jan 4",
+    duration: "40 min",
+    students: 30,
+    engagement: 82,
+  },
+];
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { data: summary, isLoading: summaryLoading, error: summaryError } = useDashboardSummary();
-  const { data: recentClasses, isLoading: classesLoading } = useRecentClasses();
 
   return (
     <AppLayout title="Dashboard" subtitle="Welcome back, Professor">
       <div className="space-y-6">
         {/* Stats Row */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {summaryLoading ? (
-            Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)
-          ) : summaryError ? (
-            <div className="col-span-4 flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
-              <AlertCircle className="h-4 w-4 shrink-0" />
-              Failed to load stats. Make sure the backend is running on{" "}
-              {import.meta.env.VITE_API_URL || "http://localhost:8000"}.
-            </div>
-          ) : (
-            <>
-              <StatCard title="Active Students" value={summary?.active_students ?? 0} icon={<Users className="h-6 w-6" />} iconColor="primary" />
-              <StatCard title="Avg. Engagement" value={`${summary?.avg_engagement ?? 0}%`} icon={<TrendingUp className="h-6 w-6" />} iconColor="success" />
-              <StatCard title="Classes This Week" value={summary?.classes_this_week ?? 0} icon={<Clock className="h-6 w-6" />} iconColor="warning" />
-              <StatCard title="Avg. Mastery" value={`${summary?.avg_mastery ?? 0}%`} icon={<GraduationCap className="h-6 w-6" />} iconColor="success" />
-            </>
-          )}
+          <StatCard
+            title="Active Students"
+            value={156}
+            change={12}
+            changeLabel="vs last week"
+            icon={<Users className="h-6 w-6" />}
+            iconColor="primary"
+          />
+          <StatCard
+            title="Avg. Engagement"
+            value="76%"
+            change={5}
+            changeLabel="improvement"
+            icon={<TrendingUp className="h-6 w-6" />}
+            iconColor="success"
+          />
+          <StatCard
+            title="Classes This Week"
+            value={12}
+            icon={<Clock className="h-6 w-6" />}
+            iconColor="warning"
+          />
+          <StatCard
+            title="Avg. Mastery"
+            value="68%"
+            change={8}
+            changeLabel="vs last month"
+            icon={<GraduationCap className="h-6 w-6" />}
+            iconColor="success"
+          />
         </div>
 
         {/* Main Content Grid */}
@@ -68,11 +110,14 @@ export default function Dashboard() {
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <span className="flex h-2.5 w-2.5 rounded-full bg-success animate-pulse" />
-                  <span className="text-sm font-medium text-primary-foreground/80">No active class</span>
+                  <span className="text-sm font-medium text-primary-foreground/80">
+                    No active class
+                  </span>
                 </div>
                 <h3 className="text-2xl font-bold">Start a Live Class</h3>
                 <p className="text-primary-foreground/70 max-w-md">
-                  Monitor student engagement in real-time and receive AI-powered intervention suggestions.
+                  Monitor student engagement in real-time and receive AI-powered
+                  intervention suggestions.
                 </p>
                 <Button
                   variant="secondary"
@@ -106,10 +151,33 @@ export default function Dashboard() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 15%, 90%)" />
-                    <XAxis dataKey="day" tick={{ fill: "hsl(220, 10%, 45%)", fontSize: 12 }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fill: "hsl(220, 10%, 45%)", fontSize: 12 }} axisLine={false} tickLine={false} domain={[0, 100]} />
-                    <Tooltip contentStyle={{ backgroundColor: "hsl(0, 0%, 100%)", border: "1px solid hsl(220, 15%, 90%)", borderRadius: "8px" }} />
-                    <Area type="monotone" dataKey="engagement" stroke="hsl(230, 65%, 50%)" strokeWidth={2} fill="url(#engagementGradient)" />
+                    <XAxis
+                      dataKey="day"
+                      tick={{ fill: "hsl(220, 10%, 45%)", fontSize: 12 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      tick={{ fill: "hsl(220, 10%, 45%)", fontSize: 12 }}
+                      axisLine={false}
+                      tickLine={false}
+                      domain={[0, 100]}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "hsl(0, 0%, 100%)",
+                        border: "1px solid hsl(220, 15%, 90%)",
+                        borderRadius: "8px",
+                        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                      }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="engagement"
+                      stroke="hsl(230, 65%, 50%)"
+                      strokeWidth={2}
+                      fill="url(#engagementGradient)"
+                    />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -122,36 +190,20 @@ export default function Dashboard() {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-lg">Recent Classes</CardTitle>
             <Button variant="ghost" className="gap-1 text-sm text-muted-foreground">
-              View All <ArrowRight className="h-4 w-4" />
+              View All
+              <ArrowRight className="h-4 w-4" />
             </Button>
           </CardHeader>
           <CardContent>
-            {classesLoading ? (
-              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <Skeleton key={i} className="h-28 rounded-xl" />
-                ))}
-              </div>
-            ) : recentClasses && recentClasses.length > 0 ? (
-              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-                {recentClasses.slice(0, 6).map((cls) => (
-                  <RecentClassCard
-                    key={cls.id}
-                    subject={cls.subject}
-                    topic={cls.topic}
-                    date={cls.date}
-                    duration={cls.duration}
-                    students={cls.students}
-                    engagement={cls.engagement}
-                    onClick={() => navigate("/recordings")}
-                  />
-                ))}
-              </div>
-            ) : (
-              <p className="text-center text-sm text-muted-foreground py-8">
-                No recent classes found. Start your first live class!
-              </p>
-            )}
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+              {recentClasses.map((cls, index) => (
+                <RecentClassCard
+                  key={index}
+                  {...cls}
+                  onClick={() => navigate("/recordings")}
+                />
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>
