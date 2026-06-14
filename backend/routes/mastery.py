@@ -31,7 +31,7 @@ def get_mastery_heatmap(
     # Teachers can only view their own students' mastery
     if current_user.role.value == "Teacher" and student_id != current_user.id:
         # Verify student is in teacher's class
-        from models.class import Class
+        from models.class_model import Class
         from models.session import ClassSession
         from models.engagement import EngagementSignal
         

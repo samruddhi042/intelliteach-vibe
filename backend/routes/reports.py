@@ -22,7 +22,7 @@ def get_engagement_report(
 ):
     """Get engagement report (export-ready data)"""
     from models.session import ClassSession
-    from models.class import Class
+    from models.class_model import Class
 
     query = db.query(ClassSession)
 

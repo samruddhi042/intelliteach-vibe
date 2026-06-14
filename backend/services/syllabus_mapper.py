@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import List, Dict
 from models.transcript import Transcript, ConceptMapping
-from models.class import Class
+from models.class_model import Class
 
 
 class SyllabusMapper:

@@ -1,5 +1,5 @@
 from .user import User, UserRole
-from .class import Class
+from .class_model import Class
 from .session import ClassSession
 from .engagement import EngagementSignal
 from .mastery import Mastery

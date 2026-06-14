@@ -21,9 +21,9 @@ class QuestionGenerator:
     @staticmethod
     def generate_questions(
         db: Session,
+        concepts: List[str],
         session_id: Optional[int] = None,
         transcript_text: Optional[str] = None,
-        concepts: List[str],
         number_of_questions: int = 5,
         difficulty: Optional[Difficulty] = None,
         student_id: Optional[int] = None

@@ -1,5 +1,11 @@
 """Constants used across the application"""
 
+import os
+
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
+SECRET_KEY = os.getenv("SECRET_KEY", "supersecretkey123changeme")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+
 # User Roles
 ROLE_TEACHER = "Teacher"
 ROLE_STUDENT = "Student"

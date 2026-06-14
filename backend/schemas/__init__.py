@@ -1,5 +1,5 @@
 from .user import UserBase, UserCreate, UserResponse, UserLogin, Token, TokenData
-from .class import ClassBase, ClassCreate, ClassResponse
+from .class_schema import ClassBase, ClassCreate, ClassResponse
 from .engagement import (
     EngagementSignalCreate,
     EngagementSignalResponse,

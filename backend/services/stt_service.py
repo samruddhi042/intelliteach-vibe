@@ -1,11 +1,21 @@
 import os
 from typing import List, Dict, Optional
 from datetime import datetime
-import whisper
 from sqlalchemy.orm import Session
 
 from models.transcript import Transcript, ConceptMapping
 from models.recording import Recording
+
+# ─── Optional Whisper import ──────────────────────────────────────────────
+# Whisper (+ PyTorch) is a heavy dependency (~2.5GB). If it's not installed,
+# the app falls back to a mock transcription so the rest of the backend
+# still works during development / hackathon demos.
+try:
+    import whisper
+    WHISPER_AVAILABLE = True
+except ImportError:
+    whisper = None
+    WHISPER_AVAILABLE = False
 
 
 class STTService:
@@ -17,6 +27,12 @@ class STTService:
     def get_model(cls):
         """Lazy load Whisper model"""
         if cls._model is None:
+            if not WHISPER_AVAILABLE:
+                print("Whisper not installed — using mock STT service instead")
+                print("To enable real transcription, run: pip install openai-whisper")
+                cls._model = "mock"
+                return cls._model
+
             try:
                 cls._model = whisper.load_model("base")
             except Exception as e:
@@ -46,7 +62,7 @@ class STTService:
             try:
                 result = model.transcribe(audio_url, word_timestamps=True)
                 transcripts = []
-                
+
                 for segment in result["segments"]:
                     transcript = Transcript(
                         session_id=session_id,
@@ -57,15 +73,15 @@ class STTService:
                     )
                     db.add(transcript)
                     transcripts.append(transcript)
-                
+
                 db.commit()
-                
+
                 # Mark recording as transcribed
                 recording = db.query(Recording).filter(Recording.id == recording_id).first()
                 if recording:
                     recording.is_transcribed = True
                     db.commit()
-                
+
                 return transcripts
             except Exception as e:
                 print(f"Error transcribing audio: {e}")
@@ -134,4 +150,3 @@ class STTService:
             db.commit()
 
         return transcripts
-

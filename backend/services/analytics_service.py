@@ -33,7 +33,7 @@ class AnalyticsService:
         )
         
         if teacher_id:
-            from models.class import Class
+            from models.class_model import Class
             recent_sessions = recent_sessions.join(Class).filter(Class.teacher_id == teacher_id)
 
         sessions = recent_sessions.all()
@@ -46,7 +46,7 @@ class AnalyticsService:
         mastery_query = db.query(func.avg(Mastery.mastery_score))
         if teacher_id:
             # Get students in teacher's classes
-            from models.class import Class
+            from models.class_model import Class
             class_ids = db.query(Class.id).filter(Class.teacher_id == teacher_id).all()
             class_ids = [c[0] for c in class_ids]
             mastery_query = mastery_query.filter(Mastery.class_id.in_(class_ids))
@@ -60,7 +60,7 @@ class AnalyticsService:
         )
         
         if teacher_id:
-            from models.class import Class
+            from models.class_model import Class
             classes_this_week = classes_this_week.join(Class).filter(Class.teacher_id == teacher_id)
 
         classes_count = classes_this_week.scalar() or 0
@@ -79,7 +79,7 @@ class AnalyticsService:
         limit: int = 10
     ) -> List[Dict]:
         """Get recent classes with summary statistics"""
-        from models.class import Class
+        from models.class_model import Class
 
         query = db.query(ClassSession).join(Class)
         

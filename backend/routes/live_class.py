@@ -4,7 +4,7 @@ from datetime import datetime
 from database import get_db
 from models.user import User
 from models.session import ClassSession
-from models.class import Class
+from models.class_model import Class
 from models.engagement import EngagementSignal
 from services.auth_service import get_current_user
 from services.engagement_engine import EngagementEngine

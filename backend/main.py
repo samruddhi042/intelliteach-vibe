@@ -20,8 +20,23 @@ from routes import (
 
 load_dotenv()
 
-# CORS origins from environment
-CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:3000").split(",")
+# CORS origins — combine .env value with common local dev ports
+_env_origins = os.getenv("CORS_ORIGINS", "")
+CORS_ORIGINS = [o.strip() for o in _env_origins.split(",") if o.strip()]
+
+# Always allow these common local dev URLs
+DEFAULT_ORIGINS = [
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+for origin in DEFAULT_ORIGINS:
+    if origin not in CORS_ORIGINS:
+        CORS_ORIGINS.append(origin)
 
 
 @asynccontextmanager
@@ -40,7 +55,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Configure CORS
+# Configure CORS — single middleware, single source of truth
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
@@ -82,4 +97,3 @@ def health_check():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
